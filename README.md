@@ -132,6 +132,10 @@ A common problem with XDR brightness apps is that closing your laptop or locking
 
 If you turned XDR on, it stays on — no matter what.
 
+## Known limitations
+
+- **Brief flicker when switching windows** — the screen may briefly flash when you switch between apps. This is a macOS compositor limitation: the window server momentarily disrupts the `multiply` compositing filter on the Metal overlay during window transitions. This affects the original xdr-boost as well and cannot be fixed without a fundamentally different approach (e.g. a custom display color profile instead of a Metal overlay).
+
 ## License
 
 MIT
