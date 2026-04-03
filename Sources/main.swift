@@ -45,6 +45,7 @@ class XDRApp: NSObject, NSApplicationDelegate {
     var hotkeyRef: EventHotKeyRef?
     var watchdogTimer: Timer?
     var isScreenLocked = false  // track lock state to avoid glitches during transitions
+    var activatedAt: Date?      // debounce display changes right after activation
 
     var toggleItem: NSMenuItem!
     var shortcutItem: NSMenuItem!
@@ -239,12 +240,12 @@ class XDRApp: NSObject, NSApplicationDelegate {
     }
 
     @objc func handleDisplayChange() {
-        // Ignore display changes during lock — they're just the lock screen transition
         guard !isScreenLocked else { return }
+        // Ignore spurious display change events in the first 2s after activation
+        if let t = activatedAt, Date().timeIntervalSince(t) < 2.0 { return }
 
         maxEDR = NSScreen.main?.maximumPotentialExtendedDynamicRangeColorComponentValue ?? 1.0
         if isActive, let window = overlayWindow, let screen = NSScreen.main {
-            // Resize overlay in-place instead of destroying and recreating
             window.setFrame(screen.frame, display: false)
             fputs("Display changed — overlay resized\n", stderr)
         }
@@ -311,6 +312,7 @@ class XDRApp: NSObject, NSApplicationDelegate {
         self.boostView = boostView
 
         isActive = true
+        activatedAt = Date()
         statusItem.button?.title = "☀︎"
         toggleItem.title = "Turn Off"
         fputs("XDR ON — \(boostLevel)x\n", stderr)
