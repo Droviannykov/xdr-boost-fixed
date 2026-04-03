@@ -268,7 +268,6 @@ class XDRApp: NSObject, NSApplicationDelegate {
             item.state = (item.tag == sender.tag) ? .on : .off
         }
         if isActive, let view = boostView {
-            // Update in-place — no teardown, no flash
             view.clearColor = MTLClearColor(red: boostLevel, green: boostLevel, blue: boostLevel, alpha: 1.0)
         }
     }
